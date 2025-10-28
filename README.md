@@ -1,70 +1,128 @@
-# ✈️ Plane Crash Game
+# 🎮 Plataforma de Jogos de Apostas
 
-Um jogo de crash/aviaozinho desenvolvido com Kivy, KivyMD e KivyLang em uma única tela.
+Uma plataforma de jogos de apostas modular desenvolvida com Kivy e KivyMD, com arquitetura preparada para múltiplos jogos.
 
-## 🎮 Como Jogar
+## � Jogos Disponíveis
 
-1. **Faça sua aposta**: Digite o valor que deseja apostar
-2. **Inicie o jogo**: Pressione ESPAÇO para começar
-3. **Cashout**: Pressione C para sacar seus ganhos antes do crash
-4. **Objetivo**: Sacar antes que o avião "crash" e você perca tudo
+### ✈️ Crash (Aviãozinho)
+- **Multiplicadores em tempo real**: Acompanhe o multiplicador subindo
+- **Auto-cashout**: Configure para sacar automaticamente em um multiplicador específico
+- **Histórico infinito**: Veja todos os resultados anteriores com scroll
+- **Barra de vencedores**: Veja outros jogadores ganhando em tempo real
+- **Múltiplas apostas**: Faça várias apostas simultâneas com diferentes configurações
 
 ## 🚀 Instalação
 
-1. Instale as dependências:
+1. Clone o repositório
+2. Instale as dependências:
 ```bash
 pip install -r requirements.txt
 ```
 
-2. Execute o jogo:
+3. Execute o jogo:
 ```bash
 python main.py
 ```
 
-## 🎯 Funcionalidades
+## � Como Jogar - Crash
 
-- **Sistema de Apostas**: Aposte valores personalizados
-- **Multiplicadores Dinâmicos**: Algoritmo realista de crash
-- **Cashout**: Saque seus ganhos a qualquer momento
-- **Histórico**: Veja seus últimos resultados na mesma tela
-- **Interface Material**: Design moderno com KivyMD
-- **Tela Única**: Tudo em uma interface simples e direta
+1. **Configure sua aposta**: Use os botões +/- ou digite o valor
+2. **Defina auto-cashout (opcional)**: Ative e configure o multiplicador para saque automático
+3. **Faça a aposta**: Clique em "JOGAR" durante a fase de apostas
+4. **Acompanhe o voo**: Veja o multiplicador subindo
+5. **Cashout manual**: Clique em "RETIRAR TUDO" antes do crash
+6. **Resultado**: Ganhe ou perca baseado no crash point
 
-## 🎨 Controles
+## 📁 Arquitetura do Projeto
 
-- **ESPAÇO**: Iniciar jogo
-- **C**: Cashout (sacar ganhos)
-- **Mouse**: Navegar pela interface
+```
+bet/
+├── game/
+│   ├── core/
+│   │   ├── base_game.py          # Classe base abstrata para jogos
+│   │   └── game_manager.py       # Gerenciador de jogos e saldo
+│   ├── games/
+│   │   └── crash.py              # Lógica do jogo Crash
+│   └── ui/
+│       └── components.py         # Componentes reutilizáveis
+├── screens/
+│   ├── base_game_screen.py       # Tela base com sistema de apostas
+│   └── crash_game_screen.py      # Tela específica do Crash
+├── layouts/
+│   ├── base_game.kv             # Layout base reutilizável
+│   └── games/
+│       └── crash_game_area.kv   # Área específica do Crash
+└── main.py                       # App principal
+```
 
-## 📱 Compatibilidade
+## � Funcionalidades
 
-- Windows, Linux, macOS
-- Android (com buildozer)
-- iOS (com buildozer)
+### Sistema de Apostas
+- ✅ Saldo persistente entre rodadas
+- ✅ Múltiplas apostas simultâneas
+- ✅ Auto-cashout configurável
+- ✅ Valores rápidos (10, 15, 100, ALL)
+- ✅ Histórico de apostas ativas
+
+### Interface
+- ✅ Design moderno Material Design
+- ✅ Fullscreen por padrão (1920x1080)
+- ✅ Animações suaves
+- ✅ Feedback visual em tempo real
+- ✅ Histórico com scroll infinito
+- ✅ Barra de vencedores animada
+
+### Crash Game
+- ✅ Sistema de estados (WAITING → BETTING → FLYING → CRASHED)
+- ✅ Countdown para início da rodada
+- ✅ Multiplicador em tempo real
+- ✅ Algoritmo de crash realista
+- ✅ Auto-cashout por aposta
+- ✅ Histórico com cores por faixa de multiplicador
 
 ## 🔧 Tecnologias
 
-- **Kivy 2.3.1**: Framework principal
-- **KivyMD 1.1.1**: Material Design
-- **KivyLang**: Linguagem de layout
-- **Python**: Linguagem de programação
+- **Python 3.12+**
+- **Kivy 2.3.1**: Framework de UI
+- **KivyMD 1.2.0**: Material Design components
+- **Arquitetura Modular**: Fácil adicionar novos jogos
 
-## 📊 Algoritmo de Crash
+## 📊 Probabilidades - Crash
 
-O jogo usa um algoritmo baseado em distribuição exponencial:
-- 50% chance de crash antes de 2x
-- 25% chance de crash antes de 4x
-- 12.5% chance de crash antes de 8x
-- E assim por diante...
+| Multiplicador | Probabilidade |
+|---------------|---------------|
+| 1.0x - 2.0x   | ~50%         |
+| 2.0x - 5.0x   | ~30%         |
+| 5.0x - 10.0x  | ~15%         |
+| 10.0x+        | ~5%          |
 
-## 🎮 Interface
+## 🎨 Cores do Histórico
 
-- **Tela única** com todas as funcionalidades
-- **Saldo e apostas** sempre visíveis
-- **Multiplicador em tempo real**
-- **Histórico dos últimos resultados**
-- **Animações do avião** (decolagem e crash)
+- 🟢 **Verde** (≥10.0x): Vitória grande
+- 🟠 **Laranja** (≥5.0x): Vitória média
+- ⚪ **Cinza** (≥2.0x): Vitória pequena
+- 🔴 **Vermelho** (<2.0x): Crash baixo
 
-## ⚠️ Aviso
+## 🚀 Adicionar Novos Jogos
 
-Este é um jogo de demonstração. Jogue com responsabilidade!
+O sistema foi projetado para facilitar a adição de novos jogos. Veja o guia completo em [COMO_ADICIONAR_JOGOS.md](COMO_ADICIONAR_JOGOS.md).
+
+**Resumo:**
+1. Criar classe do jogo herdando de `BaseGame`
+2. Criar tela herdando de `BaseGameScreen`
+3. Criar layouts KV específicos
+4. Registrar no `main.py`
+
+**Tempo estimado:** 1-2 horas para um jogo simples! 🎯
+
+## 📱 Compatibilidade
+
+- ✅ Linux
+- ✅ Windows
+- ✅ macOS
+- 🔄 Android (com Buildozer)
+- 🔄 iOS (com Buildozer)
+
+## ⚠️ Aviso Legal
+
+Este é um projeto educacional e de demonstração. Não incentivamos jogos de azar com dinheiro real. Use com responsabilidade!
