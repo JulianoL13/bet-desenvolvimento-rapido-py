@@ -1,0 +1,321 @@
+# Layout Padronizado - Cores Harmoniosas
+
+<MainScreen>:
+    name: 'main'
+    
+    # Container Principal
+    MDCard:
+        orientation: 'vertical'
+        padding: '25dp'
+        spacing: '25dp'
+        md_bg_color: 0.08, 0.08, 0.08, 1  # Cinza escuro uniforme
+        elevation: 12
+        radius: [20]
+        
+        # Barra Superior - Winners Redesenhada
+        MDCard:
+            id: winners_bar
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: '80dp'
+            padding: '15dp'
+            spacing: '15dp'
+            halign: 'center'
+            valign: 'center'
+            md_bg_color: 0.12, 0.12, 0.12, 1  # Cinza mais claro
+            elevation: 6
+            radius: [15]
+        
+        # Área Principal
+        MDBoxLayout:
+            orientation: 'horizontal'
+            spacing: '25dp'
+            
+            # Painel Principal (Esquerda - 70%)
+            MDCard:
+                orientation: 'vertical'
+                size_hint_x: 0.7
+                padding: '30dp'
+                spacing: '25dp'
+                md_bg_color: 0.10, 0.10, 0.10, 1  # Cinza escuro uniforme
+                elevation: 8
+                radius: [18]
+                
+                # Multiplicador Central
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: 0.8
+                    spacing: '25dp'
+                    
+                    # Multiplicador Principal
+                    MDBoxLayout:
+                        orientation: 'horizontal'
+                        size_hint_y: 0.7
+                        
+                        MDLabel:
+                            id: multiplier_display
+                            text: '1.00x'
+                            theme_text_color: 'Custom'
+                            text_color: 0.2, 0.8, 0.4, 1  # Verde vibrante
+                            font_size: '160sp'
+                            halign: 'center'
+                            valign: 'center'
+                            size_hint_x: 1.0
+                            bold: True
+                            outline_width: 6
+                            outline_color: 0, 0, 0, 1
+                    
+                    # Status do Jogo
+                    MDBoxLayout:
+                        orientation: 'horizontal'
+                        size_hint_y: 0.3
+                        
+                        MDLabel:
+                            id: round_status
+                            text: 'Aguardando...'
+                            theme_text_color: 'Custom'
+                            text_color: 0.9, 0.9, 0.9, 1  # Branco suave
+                            font_size: '18sp'
+                            halign: 'center'
+                            valign: 'center'
+                            size_hint_x: 0.5
+                        
+                        MDLabel:
+                            id: countdown
+                            text: ''
+                            theme_text_color: 'Custom'
+                            text_color: 1.0, 0.6, 0.2, 1  # Laranja
+                            font_size: '20sp'
+                            bold: True
+                            halign: 'center'
+                            valign: 'center'
+                            size_hint_x: 0.5
+                
+                # Histórico Redesenhado
+                MDBoxLayout:
+                    id: history_container
+                    orientation: 'horizontal'
+                    size_hint_y: 0.2
+                    padding: '15dp'
+                    spacing: '15dp'
+                    halign: 'center'
+                    valign: 'center'
+            
+            # Painel de Controles (Direita - 30%)
+            MDCard:
+                size_hint_x: 0.3
+                padding: '25dp'
+                md_bg_color: 0.10, 0.10, 0.10, 1  # Cinza escuro uniforme
+                elevation: 8
+                radius: [18]
+                
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    spacing: '20dp'
+                    
+                    # Controle de Valor Superior (Aposta)
+                    MDBoxLayout:
+                        orientation: 'horizontal'
+                        size_hint_y: None
+                        height: '60dp'
+                        spacing: '12dp'
+                        
+                        MDRaisedButton:
+                            text: '-'
+                            size_hint_x: 0.2
+                            md_bg_color: 0.8, 0.2, 0.2, 1  # Vermelho
+                            font_size: '24sp'
+                            elevation: 4
+                            on_release: root.decrease_bet_amount()
+                        
+                        MDTextField:
+                            id: bet_amount_input
+                            text: str(int(root.bet_amount))
+                            hint_text: "Valor da aposta"
+                            helper_text: "Digite o valor desejado"
+                            helper_text_mode: "on_focus"
+                            input_filter: "float"
+                            multiline: False
+                            size_hint_x: 0.6
+                            font_size: '20sp'
+                            line_color_normal: [0.0, 0.0, 1.0, 1]
+                            line_color_focus: [0.0, 1.0, 0.0, 1]
+                            text_color: [1, 1, 1, 1]
+                            hint_text_color: [0.9, 0.9, 0.9, 1]
+                            helper_text_color: [0.8, 0.8, 0.8, 1]
+                            background_color: [0.0, 0.0, 0.8, 1]
+                            foreground_color: [0.0, 0.0, 0.8, 1]
+                            mode: "fill"
+                            fill_color: [0.0, 0.0, 0.8, 1]
+                            on_text_validate: root.on_bet_amount_validate()
+                            on_focus: root.on_bet_amount_focus(self, self.focus)
+                        
+                        MDRaisedButton:
+                            text: '+'
+                            size_hint_x: 0.2
+                            md_bg_color: 0.2, 0.8, 0.4, 1  # Verde
+                            font_size: '24sp'
+                            elevation: 4
+                            on_release: root.increase_bet_amount()
+                    
+                    # Botões Rápidos - Cores Padronizadas
+                    MDBoxLayout:
+                        orientation: 'horizontal'
+                        size_hint_y: None
+                        height: '55dp'
+                        spacing: '12dp'
+                        
+                        MDRaisedButton:
+                            text: '10'
+                            size_hint_x: 0.25
+                            md_bg_color: 0.3, 0.3, 0.3, 1  # Cinza médio
+                            elevation: 3
+                            on_release: root.set_bet_amount(10)
+                        
+                        MDRaisedButton:
+                            text: '15'
+                            size_hint_x: 0.25
+                            md_bg_color: 0.3, 0.3, 0.3, 1  # Cinza médio
+                            elevation: 3
+                            on_release: root.set_bet_amount(15)
+                        
+                        MDRaisedButton:
+                            text: '100'
+                            size_hint_x: 0.25
+                            md_bg_color: 0.3, 0.3, 0.3, 1  # Cinza médio
+                            elevation: 3
+                            on_release: root.set_bet_amount(100)
+                        
+                        MDRaisedButton:
+                            text: 'ALL'
+                            size_hint_x: 0.25
+                            md_bg_color: 1.0, 0.6, 0.2, 1  # Laranja
+                            elevation: 3
+                            on_release: root.set_bet_amount(root.balance)
+                    
+                    # Botão Principal JOGAR
+                    MDRaisedButton:
+                        id: bet_button
+                        text: 'JOGAR'
+                        size_hint_y: None
+                        height: '70dp'
+                        md_bg_color: 0.2, 0.8, 0.4, 1  # Verde vibrante
+                        elevation: 8
+                        font_size: '20sp'
+                        bold: True
+                        on_release: root.add_bet()
+                    
+                    # Controle de Valor Inferior (Auto Cashout)
+                    MDBoxLayout:
+                        orientation: 'horizontal'
+                        size_hint_y: None
+                        height: '60dp'
+                        spacing: '12dp'
+                        
+                        MDRaisedButton:
+                            text: '-'
+                            size_hint_x: 0.2
+                            md_bg_color: 0.8, 0.2, 0.2, 1  # Vermelho
+                            font_size: '24sp'
+                            elevation: 4
+                            disabled: not root.auto_cashout_enabled
+                            on_release: root.decrease_auto_cashout()
+                        
+                        MDLabel:
+                            id: auto_cashout_display
+                            text: f'{root.auto_cashout_value:.1f}'
+                            theme_text_color: 'Custom'
+                            text_color: 1, 1, 1, 1
+                            font_size: '28sp'
+                            bold: True
+                            halign: 'center'
+                            valign: 'center'
+                            size_hint_x: 0.4
+                        
+                        MDRaisedButton:
+                            text: '+'
+                            size_hint_x: 0.2
+                            md_bg_color: 0.2, 0.8, 0.4, 1  # Verde
+                            font_size: '24sp'
+                            elevation: 4
+                            disabled: not root.auto_cashout_enabled
+                            on_release: root.increase_auto_cashout()
+                        
+                        MDRaisedButton:
+                            id: auto_cashout_checkbox
+                            text: 'ON' if root.auto_cashout_enabled else 'OFF'
+                            size_hint_x: 0.2
+                            md_bg_color: 0.4, 0.4, 0.4, 1  # Cinza
+                            elevation: 3
+                            on_release: root.toggle_auto_cashout()
+                    
+                    # Texto Auto Cashout
+                    MDLabel:
+                        text: 'auto cashout'
+                        theme_text_color: 'Custom'
+                        text_color: 0.7, 0.7, 0.7, 1  # Cinza claro
+                        font_size: '14sp'
+                        halign: 'center'
+                        size_hint_y: None
+                        height: '35dp'
+                    
+                    # Saldo do Jogador
+                    MDLabel:
+                        id: balance_label
+                        text: 'Saldo: R$ 1000.00'
+                        theme_text_color: 'Custom'
+                        text_color: 0.2, 0.8, 0.4, 1  # Verde
+                        font_size: '16sp'
+                        bold: True
+                        halign: 'center'
+                        size_hint_y: None
+                        height: '40dp'
+                    
+                    # Total das Apostas
+                    MDLabel:
+                        id: total_bets_label
+                        text: 'Apostas: R$ 0.00'
+                        theme_text_color: 'Custom'
+                        text_color: 0.2, 0.8, 0.4, 1  # Verde
+                        font_size: '16sp'
+                        bold: True
+                        halign: 'center'
+                        size_hint_y: None
+                        height: '40dp'
+                    
+                    # Lista de Apostas Ativas
+                    ScrollView:
+                        size_hint_y: 1
+                        
+                        MDList:
+                            id: bets_list
+                            spacing: '8dp'
+                    
+                    # Controles de Ação
+                    MDBoxLayout:
+                        orientation: 'horizontal'
+                        spacing: '12dp'
+                        size_hint_y: None
+                        height: '65dp'
+                        
+                        MDRaisedButton:
+                            id: cashout_btn
+                            text: 'RETIRAR TUDO'
+                            size_hint_x: 0.5
+                            md_bg_color: 0.2, 0.8, 0.4, 1  # Verde
+                            elevation: 6
+                            font_size: '16sp'
+                            bold: True
+                            disabled: True
+                            on_release: root.cashout_all()
+                        
+                        MDRaisedButton:
+                            id: clear_bets_btn
+                            text: 'LIMPAR APOSTAS'
+                            size_hint_x: 0.5
+                            md_bg_color: 0.8, 0.2, 0.2, 1  # Vermelho
+                            elevation: 6
+                            font_size: '16sp'
+                            bold: True
+                            disabled: True
+                            on_release: root.clear_bets()
