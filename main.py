@@ -1,5 +1,5 @@
 """
-Aplicação principal do jogo Crash
+Aplicação principal - Arquitetura modular para múltiplos jogos
 """
 from kivymd.app import MDApp
 from kivy.uix.screenmanager import ScreenManager, Screen
@@ -13,7 +13,8 @@ from kivy.factory import Factory
 from kivy.properties import BooleanProperty, NumericProperty
 import random
 
-from game.logic.engine import GameEngine, GameState
+from game.core.game_manager import GameManager
+from game.games.crash import CrashGame, GameState
 from game.ui.components import HistorySquare, WinnerItem
 from game.ui.widgets import (
     ModernCard, GlowButton, AnimatedMultiplier, 
@@ -29,7 +30,7 @@ def show_snackbar(text):
 
 
 class MainScreen(Screen):
-    """Tela principal do jogo"""
+    """Tela principal do jogo Crash (usando arquitetura modular)"""
     auto_cashout_enabled = BooleanProperty(False)
     bet_amount = NumericProperty(10.0)
     auto_cashout_value = NumericProperty(5.0)
@@ -38,13 +39,17 @@ class MainScreen(Screen):
         super().__init__(**kwargs)
         self.bind(auto_cashout_enabled=self.update_checkbox_color)
         
-        self.game_engine = GameEngine()
-        self.game_engine.on_state_change = self.on_game_state_change
-        self.game_engine.on_multiplier_update = self.on_multiplier_update
-        self.game_engine.on_crash = self.on_crash
-        self.game_engine.on_auto_cashout = self.on_auto_cashout
+        # Usar GameManager para gerenciar estado
+        self.game_manager = GameManager()
+        self.game_manager.register_game('Crash', CrashGame)
         
-        self.balance = 1000.00
+        # Inicializar jogo Crash
+        self.game = self.game_manager.set_current_game('Crash')
+        self.game.on_state_change = self.on_game_state_change
+        self.game.on_multiplier_update = self.on_multiplier_update
+        self.game.on_crash = self.on_crash
+        self.game.on_auto_cashout = self.on_auto_cashout
+        
         self.names = [
             "An***ymous", "Pl***er", "Ga***r", "Lu***y", "Wi***r",
             "Cr***h", "Be***r", "Fa***t", "Bi***n", "Ac***e",
@@ -58,7 +63,7 @@ class MainScreen(Screen):
     
     def start_new_round(self, dt):
         """Inicia uma nova rodada"""
-        self.game_engine.start_new_round()
+        self.game.start_new_round()
         self.update_balance_display()
     
     def on_game_state_change(self, state, countdown):
@@ -83,31 +88,31 @@ class MainScreen(Screen):
             Clock.schedule_interval(self.update_multiplier, 0.1)
             
         elif state == GameState.CRASHED:
-            self.ids.round_status.text = f'CRASH em {self.game_engine.crash_multiplier:.2f}x!'
+            self.ids.round_status.text = f'CRASH em {self.game.crash_multiplier:.2f}x!'
             self.ids.cashout_btn.disabled = True
             Clock.unschedule(self.update_multiplier)
             self.animate_plane_crash()
-            Clock.schedule_once(self.start_new_round, self.game_engine.round_interval)
+            Clock.schedule_once(self.start_new_round, self.game.round_interval)
     
     def update_countdown(self, dt):
         """Atualiza o countdown de apostas"""
-        if not self.game_engine.update_betting_countdown():
+        if not self.game.update_betting_countdown():
             Clock.unschedule(self.update_countdown)
         else:
-            self.ids.countdown.text = f'{self.game_engine.countdown_timer}s'
+            self.ids.countdown.text = f'{self.game.countdown_timer}s'
             self.animate_countdown_number()
     
     def update_multiplier(self, dt):
         """Atualiza o multiplicador"""
-        if not self.game_engine.update_multiplier():
+        if not self.game.update_multiplier():
             Clock.unschedule(self.update_multiplier)
     
     def on_multiplier_update(self, multiplier):
         """Callback quando o multiplicador é atualizado"""
         self.ids.multiplier_display.text = f'{multiplier:.2f}x'
         
-        all_cashed_out = all(bet.cashed_out for bet in self.game_engine.active_bets if self.game_engine.active_bets)
-        if all_cashed_out and self.game_engine.active_bets:
+        all_cashed_out = all(bet.cashed_out for bet in self.game.active_bets if self.game.active_bets)
+        if all_cashed_out and self.game.active_bets:
             self.ids.multiplier_display.text_color = [1, 0.5, 0, 1]
         else:
             self.ids.multiplier_display.text_color = [0, 1, 0, 1]
@@ -118,10 +123,10 @@ class MainScreen(Screen):
     
     def on_auto_cashout(self, bet, multiplier, winnings):
         """Callback quando auto cashout é executado"""
-        self.balance += winnings
+        self.game_manager.add_balance(winnings)
         show_snackbar(f'Auto cashout! Ganhou R$ {winnings:.2f} em {multiplier:.2f}x')
         self.update_bets_display()
-        self.ids.balance_label.text = f'Saldo: R$ {self.balance:.2f}'
+        self.update_balance_display()
     
     def update_winners_display(self, dt):
         """Atualiza a exibição dos winners aleatórios"""
@@ -153,13 +158,13 @@ class MainScreen(Screen):
     
     def increase_bet_amount(self):
         """Aumenta o valor da aposta"""
-        if self.bet_amount < self.balance:
+        if self.bet_amount < self.game_manager.get_balance():
             self.bet_amount += 1
             self.ids.bet_amount_input.text = str(int(self.bet_amount))
     
     def set_bet_amount(self, amount):
         """Define o valor da aposta"""
-        if amount <= self.balance:
+        if amount <= self.game_manager.get_balance():
             self.bet_amount = amount
             self.ids.bet_amount_input.text = str(int(amount))
     
@@ -167,7 +172,7 @@ class MainScreen(Screen):
         """Callback quando o usuário pressiona Enter no campo de aposta"""
         try:
             value = float(self.ids.bet_amount_input.text)
-            if value > 0 and value <= self.balance:
+            if value > 0 and value <= self.game_manager.get_balance():
                 self.bet_amount = value
                 show_snackbar(f'Valor da aposta definido para R$ {value:.2f}')
             else:
@@ -210,7 +215,7 @@ class MainScreen(Screen):
             show_snackbar('Valor deve ser maior que zero!')
             return
             
-        if self.bet_amount > self.balance:
+        if self.bet_amount > self.game_manager.get_balance():
             show_snackbar('Saldo insuficiente!')
             return
         
@@ -221,8 +226,8 @@ class MainScreen(Screen):
                 show_snackbar('Auto Cashout deve ser maior que 1.0x!')
                 return
         
-        if self.game_engine.add_bet(self.bet_amount, auto_cashout_value):
-            self.balance -= self.bet_amount
+        if self.game.add_bet(self.bet_amount, auto_cashout=auto_cashout_value):
+            self.game_manager.subtract_balance(self.bet_amount)
             self.update_bets_display()
             self.update_balance_display()
             show_snackbar(f'Aposta de R$ {self.bet_amount:.2f} adicionada!')
@@ -231,9 +236,9 @@ class MainScreen(Screen):
     
     def cashout_all(self):
         """Retira todas as apostas ativas"""
-        total_winnings = self.game_engine.cashout_all()
+        total_winnings = self.game.cashout_all()
         if total_winnings > 0:
-            self.balance += total_winnings
+            self.game_manager.add_balance(total_winnings)
             self.update_bets_display()
             self.update_balance_display()
             show_snackbar(f'Retirada total! Ganho: R$ {total_winnings:.2f}')
@@ -243,9 +248,9 @@ class MainScreen(Screen):
     
     def clear_bets(self):
         """Limpa todas as apostas ativas"""
-        total_returned = self.game_engine.clear_bets()
+        total_returned = self.game.clear_bets()
         if total_returned > 0:
-            self.balance += total_returned
+            self.game_manager.add_balance(total_returned)
             self.update_bets_display()
             self.update_balance_display()
             show_snackbar('Apostas canceladas!')
@@ -255,13 +260,13 @@ class MainScreen(Screen):
     def update_bets_display(self):
         """Atualiza a exibição das apostas ativas"""
         self.ids.bets_list.clear_widgets()
-        total_bets = self.game_engine.get_active_bets_total()
+        total_bets = self.game.get_active_bets_total()
         self.ids.total_bets_label.text = f'Apostas: R$ {total_bets:.2f}'
         
-        has_bets = len(self.game_engine.active_bets) > 0
+        has_bets = len(self.game.active_bets) > 0
         self.ids.clear_bets_btn.disabled = not has_bets
         
-        for i, bet in enumerate(self.game_engine.active_bets):
+        for i, bet in enumerate(self.game.active_bets):
             item = OneLineListItem()
             item.text = f'Aposta {i+1}: R$ {bet.amount:.2f}'
             if bet.auto_cashout:
@@ -273,14 +278,14 @@ class MainScreen(Screen):
     
     def update_balance_display(self):
         """Atualiza a exibição do saldo"""
-        self.ids.balance_label.text = f'Saldo: R$ {self.balance:.2f}'
+        self.ids.balance_label.text = f'Saldo: R$ {self.game_manager.get_balance():.2f}'
     
     def update_history_display(self):
         """Atualiza a exibição do histórico de resultados"""
         self.ids.history_container.clear_widgets()
         
-        if self.game_engine.last_results:
-            recent = self.game_engine.last_results[-5:]
+        if self.game.last_results:
+            recent = self.game.last_results[-5:]
             
             colors = [
                 [0.2, 0.8, 0.4, 0.8],
