@@ -2,6 +2,10 @@
 
 Uma plataforma de jogos de apostas modular desenvolvida com Kivy e KivyMD, com arquitetura preparada para múltiplos jogos.
 
+**Projeto Acadêmico** - Desenvolvimento Rápido em Python  
+Curso: Análise e Desenvolvimento de Sistemas (ADS) e Sistemas de Informação (SI)  
+Instituição: UNIFACIMPS
+
 ## � Jogos Disponíveis
 
 ### ✈️ Crash (Aviãozinho)
