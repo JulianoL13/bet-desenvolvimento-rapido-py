@@ -4,7 +4,7 @@ Uma plataforma de jogos de apostas modular desenvolvida com Kivy e KivyMD, com a
 
 **Projeto Acadêmico** - Desenvolvimento Rápido em Python  
 Curso: Análise e Desenvolvimento de Sistemas (ADS) e Sistemas de Informação (SI)  
-Instituição: UNIFACIMPS
+Instituição: UNIFACIMP
 
 ## � Jogos Disponíveis
 
